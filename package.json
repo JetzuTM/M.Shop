@@ -1,0 +1,14 @@
+{
+  "name": "multishop",
+  "version": "1.0.0",
+  "description": "Sistema de Ventas Ajax PHP_POO MySQL Jquery ============",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "sweetalert2": "^11.14.5"
+  }
+}
