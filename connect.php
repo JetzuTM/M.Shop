@@ -1,52 +1,57 @@
-<?php
+<<?php
 error_reporting(E_PARSE);
 
+// --- CONFIGURACIÓN DINÁMICA ---
+$url = getenv('MYSQL_URL');
 
- const USER = "root";
+if ($url) {
+    // Entorno de Railway (Nube)
+    $dbcomponents = parse_url($url);
+    define("SERVER", $dbcomponents['host']);
+    define("USER", $dbcomponents['user']);
+    define("PASS", $dbcomponents['pass']);
+    define("BD", ltrim($dbcomponents['path'], '/'));
+    define("PORT", $dbcomponents['port']);
+} else {
+    // Entorno Local (XAMPP)
+    define("SERVER", "localhost");
+    define("USER", "root");
+    define("PASS", "");
+    define("BD", "dbsistema");
+    define("PORT", "3306");
+}
 
- const SERVER = "localhost"; 
-
-const BD = "dbsistema";
-
-const PASS = "";
-
-//Carpeta donde se almacenaran las copias de seguridad
-const BACKUP_PATH =  "./backup/";
-
-/*Configuración de zona horaria de tu país para más información visita
-    http://php.net/manual/es/function.date-default-timezone-set.php
-    http://php.net/manual/es/timezones.php
-*/
+const BACKUP_PATH = "./backup/";
 date_default_timezone_set('America/Caracas');
 
-
-class SGBD{
-
-    public static function sql($query){
-        $con=mysqli_connect(SERVER, USER, PASS, BD);
+class SGBD {
+    public static function sql($query) {
+        // Añadimos el PORT a la conexión
+        $con = mysqli_connect(SERVER, USER, PASS, BD, PORT);
         mysqli_set_charset($con, "utf8");
+        
         if (mysqli_connect_errno()) {
             printf("Conexion fallida: %s\n", mysqli_connect_error());
             exit();
-        }else{
+        } else {
             mysqli_autocommit($con, false);
             mysqli_begin_transaction($con, MYSQLI_TRANS_START_WITH_CONSISTENT_SNAPSHOT);
-            if($consul=mysqli_query($con, $query)){
+            if ($consul = mysqli_query($con, $query)) {
                 if (!mysqli_commit($con)) {
                     print("Falló la consignación de la transacción\n");
                     exit();
                 }
-            }else{
+            } else {
                 mysqli_rollback($con);
                 echo "Falló la transacción";
                 exit();
             }
             return $consul;
         }
-    }  
+    }
 
     public static function limpiarCadena($valor) {
-        $valor=addslashes($valor);
+        $valor = addslashes($valor);
         $valor = str_ireplace("<script>", "", $valor);
         $valor = str_ireplace("</script>", "", $valor);
         $valor = str_ireplace("SELECT * FROM", "", $valor);
@@ -64,4 +69,3 @@ class SGBD{
         return $valor;
     }
 }
-
