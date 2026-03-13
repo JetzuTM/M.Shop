@@ -2,19 +2,20 @@ name: Desplegar a InfinityFree
 on:
   push:
     branches:
-      - main  # O master, según uses
+      - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
       - name: 🚚 Obtener código del repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: 🚀 Subir archivos por FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          server-dir: /htdocs/  # InfinityFree usa esta carpeta
+          server-dir: htdocs/
+          protocol: ftp
