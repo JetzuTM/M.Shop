@@ -1,3 +1,5 @@
+-- MultiShop Backup
+
 SET FOREIGN_KEY_CHECKS=0;
 
 CREATE DATABASE IF NOT EXISTS dbsistema;
@@ -22,16 +24,17 @@ CREATE TABLE `articulo` (
   UNIQUE KEY `nombre_UNIQUE` (`nombre`),
   KEY `fk_articulo_categoria_idx` (`idcategoria`),
   CONSTRAINT `fk_articulo_categoria` FOREIGN KEY (`idcategoria`) REFERENCES `categoria` (`idcategoria`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
-INSERT INTO articulo VALUES("2","13","122974987234","Stitch Azul","11","0","Peluche Stitch Grande 35 Cm Azul","1727046155.png","1","10.00","20.00");
+INSERT INTO articulo VALUES("2","13","122974987234","Stitch Azul","1","0","Peluche Stitch Grande 35 Cm Azul","1727046155.png","1","10.00","20.00");
 INSERT INTO articulo VALUES("3","10","324812423423","Letras 3D Personalizadas","0","0","","1727045782.png","1","50.00","45.00");
-INSERT INTO articulo VALUES("4","10","0000340234","Cintas Colores Metalicas","15","0","Cintas Colores Metalicas 30 Mm X 25 Mtr","1727041881.png","1","50.00","45.00");
-INSERT INTO articulo VALUES("8","12","32432423777","Cajitas Regalo Dia Del Padre","25","0","Cajitas Decoradas De Regalo Para El Día Del Padre","1727041036.png","1","12.00","18.00");
-INSERT INTO articulo VALUES("9","12","32452423777","Caja Personalizados Con Frase","10","0","Caja Rígida Para Regalos Personalizados Con Frase","1727041500.png","1","11.00","22.00");
+INSERT INTO articulo VALUES("4","10","0000340234","Cintas Colores Metalicas","6","0","Cintas Colores Metalicas 30 Mm X 25 Mtr","1727041881.png","1","50.00","45.00");
+INSERT INTO articulo VALUES("8","12","32432423777","Cajitas Regalo Dia Del Padre","19","0","Cajitas Decoradas De Regalo Para El Día Del Padre","1727041036.png","1","12.00","18.00");
+INSERT INTO articulo VALUES("9","12","32452423777","Caja Personalizados Con Frase","9","0","Caja Rígida Para Regalos Personalizados Con Frase","1727041500.png","1","11.00","22.00");
 INSERT INTO articulo VALUES("10","13","12352423777","Stitch Rosado","28","0","Peluche Stitch Grande 35 Cm Rosado","1727042173.png","1","77.00","33.00");
 INSERT INTO articulo VALUES("11","12","32438883777","Globos  En Forma De Corazon","31","0","Globos De Helio En Forma De Corazón Rojo","1727042629.png","1","40.00","45.00");
 INSERT INTO articulo VALUES("12","12","324822243423","Caja  Forma De Corazon Y Cuadrado","50","0","Caja Pequeña Visor En Acetato Forma De Corazón Y Cuadrado","1727042737.png","1","33.00","45.00");
+INSERT INTO articulo VALUES("15","13","12321321","Peluche Capybara","20","0","Peluche Capybara de 25Cm","1743425588.png","1","10.00","15.00");
 
 
 
@@ -44,7 +47,7 @@ CREATE TABLE `categoria` (
   `condicion` tinyint(1) NOT NULL DEFAULT 1,
   PRIMARY KEY (`idcategoria`),
   UNIQUE KEY `nombre_UNIQUE` (`nombre`)
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 INSERT INTO categoria VALUES("2","Cintas","","0");
 INSERT INTO categoria VALUES("10","Decoración","","0");
@@ -53,6 +56,8 @@ INSERT INTO categoria VALUES("13","Peluches","Peluche","1");
 INSERT INTO categoria VALUES("14","Globos","","0");
 INSERT INTO categoria VALUES("16","Cinta","","1");
 INSERT INTO categoria VALUES("17","Lazos","lazos largos","0");
+INSERT INTO categoria VALUES("19","Regalos","cajas de regalo","1");
+INSERT INTO categoria VALUES("20","Corazones","","0");
 
 
 
@@ -63,19 +68,21 @@ CREATE TABLE `delivery` (
   `codigo` varchar(50) DEFAULT NULL,
   `nombre` varchar(100) NOT NULL,
   `stock` int(11) NOT NULL,
-  `precio` int(240) NOT NULL,
+  `precio` decimal(10,2) NOT NULL,
   `descripcion` varchar(256) DEFAULT NULL,
   `imagen` varchar(50) DEFAULT NULL,
   `condicion` tinyint(1) NOT NULL DEFAULT 1,
+  `telefono` varchar(20) DEFAULT NULL,
+  `direccion` varchar(255) DEFAULT NULL,
   `precio_compra` decimal(10,2) NOT NULL,
-  `precio_venta` varchar(100) NOT NULL,
+  `precio_venta` decimal(10,2) NOT NULL,
   PRIMARY KEY (`iddelivery`),
   UNIQUE KEY `nombre_UNIQUE` (`nombre`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
-INSERT INTO delivery VALUES("10","","Josber Hernández","0","0","Peluche Stitch Grande 35 Cm Rosado","1728007636.jpeg","1","0.00","Castaño");
-INSERT INTO delivery VALUES("14","","Yostyn Medina","12","0","12","1728007940.jpeg","1","0.00","La Chapa");
-INSERT INTO delivery VALUES("15","","Samuel Paraco","12","0","33","1728008274.jpg","1","0.00","Maracay");
+INSERT INTO delivery VALUES("16","","Josber Hernández","0","0.00","Peluche Stitch Grande 35 Cm Rosado","1728007636.jpeg","1","","Castaño","0.00","0.00");
+INSERT INTO delivery VALUES("17","","Yostyn Medina","12","0.00","12","1728007940.jpeg","1","","La Chapa","0.00","0.00");
+INSERT INTO delivery VALUES("18","","Samuel Paraco","12","0.00","33","1728008274.jpg","1","","Maracay","0.00","0.00");
 
 
 
@@ -93,45 +100,18 @@ CREATE TABLE `detalle_ingreso` (
   KEY `fk_detalle_ingreso_articulo_idx` (`idarticulo`),
   CONSTRAINT `fk_detalle_ingreso_articulo` FOREIGN KEY (`idarticulo`) REFERENCES `articulo` (`idarticulo`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_detalle_ingreso_ingreso` FOREIGN KEY (`idingreso`) REFERENCES `ingreso` (`idingreso`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=50 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=59 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
-INSERT INTO detalle_ingreso VALUES("13","9","4","1","1.00","1.00");
-INSERT INTO detalle_ingreso VALUES("14","9","4","1","1.00","1.00");
-INSERT INTO detalle_ingreso VALUES("15","10","4","1","1.00","1.00");
-INSERT INTO detalle_ingreso VALUES("16","10","4","1","1.00","1.00");
-INSERT INTO detalle_ingreso VALUES("17","10","4","1","1.00","1.00");
-INSERT INTO detalle_ingreso VALUES("18","10","4","1","1.00","1.00");
-INSERT INTO detalle_ingreso VALUES("19","11","4","1","1.00","1.00");
-INSERT INTO detalle_ingreso VALUES("20","11","4","1","1.00","1.00");
-INSERT INTO detalle_ingreso VALUES("21","11","4","1","1.00","1.00");
-INSERT INTO detalle_ingreso VALUES("22","11","4","1","1.00","1.00");
-INSERT INTO detalle_ingreso VALUES("23","11","4","1","1.00","1.00");
-INSERT INTO detalle_ingreso VALUES("24","11","4","1","1.00","1.00");
-INSERT INTO detalle_ingreso VALUES("25","11","4","1","1.00","1.00");
-INSERT INTO detalle_ingreso VALUES("26","11","4","1","1.00","1.00");
-INSERT INTO detalle_ingreso VALUES("27","11","4","1","1.00","1.00");
-INSERT INTO detalle_ingreso VALUES("28","11","4","1","1.00","1.00");
-INSERT INTO detalle_ingreso VALUES("29","11","4","1","1.00","1.00");
-INSERT INTO detalle_ingreso VALUES("30","11","4","1","1.00","1.00");
-INSERT INTO detalle_ingreso VALUES("31","11","4","1","1.00","1.00");
-INSERT INTO detalle_ingreso VALUES("32","11","4","1","1.00","1.00");
-INSERT INTO detalle_ingreso VALUES("33","11","4","1","1.00","1.00");
-INSERT INTO detalle_ingreso VALUES("34","11","4","1","1.00","1.00");
-INSERT INTO detalle_ingreso VALUES("35","12","3","1","1.00","1.00");
-INSERT INTO detalle_ingreso VALUES("36","12","3","1","1.00","1.00");
-INSERT INTO detalle_ingreso VALUES("37","12","3","1","1.00","1.00");
-INSERT INTO detalle_ingreso VALUES("38","12","3","1","1.00","1.00");
-INSERT INTO detalle_ingreso VALUES("39","12","3","1","1.00","1.00");
-INSERT INTO detalle_ingreso VALUES("40","13","3","1","1.00","1.00");
-INSERT INTO detalle_ingreso VALUES("41","13","3","1","1.00","1.00");
-INSERT INTO detalle_ingreso VALUES("42","13","3","1","1.00","1.00");
 INSERT INTO detalle_ingreso VALUES("43","14","4","1","1.00","1.00");
 INSERT INTO detalle_ingreso VALUES("44","14","3","1","1.00","1.00");
 INSERT INTO detalle_ingreso VALUES("45","14","4","1","1.00","1.00");
 INSERT INTO detalle_ingreso VALUES("46","14","3","1","1.00","1.00");
-INSERT INTO detalle_ingreso VALUES("47","15","10","1","66.00","66.00");
-INSERT INTO detalle_ingreso VALUES("48","16","2","4","10.00","0.00");
-INSERT INTO detalle_ingreso VALUES("49","16","10","4","10.00","0.00");
+INSERT INTO detalle_ingreso VALUES("50","17","2","2","3.00","5.00");
+INSERT INTO detalle_ingreso VALUES("51","17","3","3","2.00","5.00");
+INSERT INTO detalle_ingreso VALUES("52","17","11","1","1.00","1.00");
+INSERT INTO detalle_ingreso VALUES("56","19","15","6","1.00","1.00");
+INSERT INTO detalle_ingreso VALUES("57","19","2","1","1.00","1.00");
+INSERT INTO detalle_ingreso VALUES("58","19","10","1","1.00","1.00");
 
 
 
@@ -148,7 +128,7 @@ CREATE TABLE `detalle_pedido` (
   KEY `idarticulo` (`idarticulo`),
   CONSTRAINT `detalle_pedido_ibfk_1` FOREIGN KEY (`idpedido`) REFERENCES `pedidos` (`idpedido`),
   CONSTRAINT `detalle_pedido_ibfk_2` FOREIGN KEY (`idarticulo`) REFERENCES `articulo` (`idarticulo`)
-) ENGINE=InnoDB AUTO_INCREMENT=79 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=98 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 INSERT INTO detalle_pedido VALUES("3","2","0","5","20.00");
 INSERT INTO detalle_pedido VALUES("4","2","0","15","45.00");
@@ -226,6 +206,25 @@ INSERT INTO detalle_pedido VALUES("75","45","12","1","45.00");
 INSERT INTO detalle_pedido VALUES("76","45","10","1","33.00");
 INSERT INTO detalle_pedido VALUES("77","46","4","1","45.00");
 INSERT INTO detalle_pedido VALUES("78","47","8","1","18.00");
+INSERT INTO detalle_pedido VALUES("79","48","4","1","45.00");
+INSERT INTO detalle_pedido VALUES("80","48","8","1","18.00");
+INSERT INTO detalle_pedido VALUES("81","49","4","1","45.00");
+INSERT INTO detalle_pedido VALUES("82","50","8","1","18.00");
+INSERT INTO detalle_pedido VALUES("83","51","8","1","18.00");
+INSERT INTO detalle_pedido VALUES("84","52","2","10","20.00");
+INSERT INTO detalle_pedido VALUES("85","53","4","1","45.00");
+INSERT INTO detalle_pedido VALUES("86","54","8","1","18.00");
+INSERT INTO detalle_pedido VALUES("87","55","4","1","45.00");
+INSERT INTO detalle_pedido VALUES("88","56","4","2","45.00");
+INSERT INTO detalle_pedido VALUES("89","57","2","1","20.00");
+INSERT INTO detalle_pedido VALUES("90","57","4","1","45.00");
+INSERT INTO detalle_pedido VALUES("91","58","4","1","45.00");
+INSERT INTO detalle_pedido VALUES("92","59","8","1","18.00");
+INSERT INTO detalle_pedido VALUES("93","60","4","1","45.00");
+INSERT INTO detalle_pedido VALUES("94","61","8","1","18.00");
+INSERT INTO detalle_pedido VALUES("95","62","8","1","18.00");
+INSERT INTO detalle_pedido VALUES("96","63","9","1","22.00");
+INSERT INTO detalle_pedido VALUES("97","63","8","1","18.00");
 
 
 
@@ -243,19 +242,19 @@ CREATE TABLE `detalle_venta` (
   KEY `fk_detalle_venta_articulo_idx` (`idarticulo`),
   CONSTRAINT `fk_detalle_venta_articulo` FOREIGN KEY (`idarticulo`) REFERENCES `articulo` (`idarticulo`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_detalle_venta_venta` FOREIGN KEY (`idventa`) REFERENCES `venta` (`idventa`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
-INSERT INTO detalle_venta VALUES("6","4","3","1","10.00","0.00");
-INSERT INTO detalle_venta VALUES("7","4","2","1","120.00","0.00");
-INSERT INTO detalle_venta VALUES("10","7","3","1","2.00","2.00");
-INSERT INTO detalle_venta VALUES("11","7","3","1","2.00","2.00");
-INSERT INTO detalle_venta VALUES("12","7","3","1","2.00","2.00");
 INSERT INTO detalle_venta VALUES("15","9","3","1","0.00","0.00");
 INSERT INTO detalle_venta VALUES("16","9","3","1","0.00","0.00");
 INSERT INTO detalle_venta VALUES("17","10","4","1","1.00","0.00");
 INSERT INTO detalle_venta VALUES("18","10","4","1","1.00","0.00");
 INSERT INTO detalle_venta VALUES("19","11","9","1","22.00","0.00");
 INSERT INTO detalle_venta VALUES("20","11","9","1","22.00","0.00");
+INSERT INTO detalle_venta VALUES("21","12","8","6","23.00","0.00");
+INSERT INTO detalle_venta VALUES("22","13","2","3","20.00","0.00");
+INSERT INTO detalle_venta VALUES("23","13","3","2","45.00","0.00");
+INSERT INTO detalle_venta VALUES("24","13","4","1","45.00","0.00");
+INSERT INTO detalle_venta VALUES("25","14","4","5","45.00","0.00");
 
 
 
@@ -277,16 +276,11 @@ CREATE TABLE `ingreso` (
   KEY `fk_ingreso_usuario_idx` (`idusuario`),
   CONSTRAINT `fk_ingreso_persona` FOREIGN KEY (`idproveedor`) REFERENCES `persona` (`idpersona`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_ingreso_usuario` FOREIGN KEY (`idusuario`) REFERENCES `usuario` (`idusuario`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
-INSERT INTO ingreso VALUES("9","13","1","Factura","2","2","2024-09-22 00:00:00","12.00","2.00","Aceptado");
-INSERT INTO ingreso VALUES("10","14","1","Factura","1","","2024-09-22 00:00:00","1.00","4.00","Aceptado");
-INSERT INTO ingreso VALUES("11","14","1","Factura","2","3","2002-05-22 00:00:00","0.00","16.00","Aceptado");
-INSERT INTO ingreso VALUES("12","14","1","Factura","2","2","2024-09-22 00:00:00","0.00","5.00","Aceptado");
-INSERT INTO ingreso VALUES("13","13","1","Factura","2","2","2024-09-22 00:00:00","0.00","3.00","Aceptado");
 INSERT INTO ingreso VALUES("14","7","1","Factura","12","12","2024-09-22 00:00:00","0.00","4.00","Aceptado");
-INSERT INTO ingreso VALUES("15","13","1","Factura","","","2024-09-23 00:00:00","0.00","1.00","Aceptado");
-INSERT INTO ingreso VALUES("16","14","1","Factura","","","2024-09-23 00:00:00","0.00","80.00","Aceptado");
+INSERT INTO ingreso VALUES("17","15","1","Factura","ewqewq","qeqe","2025-03-31 00:00:00","99.99","13.00","Aceptado");
+INSERT INTO ingreso VALUES("19","7","1","Factura","121323","2233223","2026-01-16 00:00:00","0.00","8.00","Aceptado");
 
 
 
@@ -301,7 +295,7 @@ CREATE TABLE `notificaciones` (
   PRIMARY KEY (`idnotificacion`),
   KEY `idusuario` (`idusuario`),
   CONSTRAINT `notificaciones_ibfk_1` FOREIGN KEY (`idusuario`) REFERENCES `usuario` (`idusuario`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=54 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=62 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 INSERT INTO notificaciones VALUES("1","1","Tu pedido #45 ha sido ACEPTADO.","2024-12-08 18:31:11","1");
 INSERT INTO notificaciones VALUES("2","1","Tu pedido #44 ha sido ACEPTADO.","2024-12-08 18:31:32","1");
@@ -356,6 +350,8 @@ INSERT INTO notificaciones VALUES("50","1","Tu pedido N47 ha sido ACEPTADO.","20
 INSERT INTO notificaciones VALUES("51","1","Tu pedido N47 ha sido ACEPTADO.","2024-12-09 06:36:20","0");
 INSERT INTO notificaciones VALUES("52","1","Tu pedido N47 ha sido ACEPTADO.","2024-12-09 06:39:40","0");
 INSERT INTO notificaciones VALUES("53","1","Tu pedido N47 ha sido ACEPTADO.","2024-12-09 06:40:13","0");
+INSERT INTO notificaciones VALUES("54","1","Tu pedido ha sido RECHAZADO.","2025-03-31 09:01:44","0");
+INSERT INTO notificaciones VALUES("55","1","Tu pedido ha sido ACEPTADO.","2025-03-31 09:02:06","0");
 
 
 
@@ -372,7 +368,7 @@ CREATE TABLE `pedidos` (
   PRIMARY KEY (`idpedido`),
   KEY `fk_pedido_delivery` (`id_delivery`),
   CONSTRAINT `fk_pedido_delivery` FOREIGN KEY (`id_delivery`) REFERENCES `delivery` (`iddelivery`)
-) ENGINE=InnoDB AUTO_INCREMENT=48 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=64 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 INSERT INTO pedidos VALUES("2","17","2024-10-14 08:17:17","Aceptado","","0","0");
 INSERT INTO pedidos VALUES("3","17","2024-10-14 09:22:43","Pendiente","","0","0");
@@ -399,7 +395,7 @@ INSERT INTO pedidos VALUES("25","8","2024-11-09 04:23:01","Pendiente","","1","0"
 INSERT INTO pedidos VALUES("26","8","2024-11-09 04:26:03","Pendiente","","1","0");
 INSERT INTO pedidos VALUES("27","8","2024-11-09 04:38:56","Pendiente","","1","0");
 INSERT INTO pedidos VALUES("28","8","2024-11-09 04:42:20","Pendiente","","1","0");
-INSERT INTO pedidos VALUES("29","8","2024-11-09 04:47:15","Pendiente","","1","10");
+INSERT INTO pedidos VALUES("29","8","2024-11-09 04:47:15","Rechazado","","1","10");
 INSERT INTO pedidos VALUES("30","1","2024-11-09 06:00:36","Aceptado","","1","14");
 INSERT INTO pedidos VALUES("31","1","2024-11-09 06:50:40","Rechazado","","1","10");
 INSERT INTO pedidos VALUES("32","17","2024-11-09 07:40:59","Finalizado","","1","15");
@@ -412,11 +408,26 @@ INSERT INTO pedidos VALUES("38","23","2024-11-19 11:24:29","Pendiente","","0","0
 INSERT INTO pedidos VALUES("39","1","2024-11-20 10:30:16","Aceptado","","0","0");
 INSERT INTO pedidos VALUES("40","1","2024-11-20 12:22:25","Aceptado","","1","14");
 INSERT INTO pedidos VALUES("41","1","2024-12-07 22:33:36","Rechazado","","0","0");
-INSERT INTO pedidos VALUES("43","","0000-00-00 00:00:00","","","0","0");
 INSERT INTO pedidos VALUES("44","1","2024-12-08 06:26:14","Aceptado","555555555555","0","0");
 INSERT INTO pedidos VALUES("45","1","2024-12-08 07:13:20","Aceptado","643176585675","0","0");
-INSERT INTO pedidos VALUES("46","1","2024-12-09 10:53:35","Pendiente","444444444444","1","14");
-INSERT INTO pedidos VALUES("47","1","2024-12-09 11:05:23","Aceptado","111111111111","1","0");
+INSERT INTO pedidos VALUES("46","1","2024-12-09 10:53:35","Finalizado","444444444444","1","14");
+INSERT INTO pedidos VALUES("47","1","2024-12-09 11:05:23","Rechazado","111111111111","1","0");
+INSERT INTO pedidos VALUES("48","17","2025-04-21 23:14:15","Pendiente","322222222222","0","");
+INSERT INTO pedidos VALUES("49","17","2025-04-21 23:15:40","Pendiente","211111111111","0","");
+INSERT INTO pedidos VALUES("50","17","2025-04-21 23:28:48","Pendiente","232113223222","0","");
+INSERT INTO pedidos VALUES("51","17","2025-04-21 23:29:46","Pendiente","222222222222","1","");
+INSERT INTO pedidos VALUES("52","17","2025-05-18 16:39:43","Pendiente","212312345555","0","");
+INSERT INTO pedidos VALUES("53","17","2025-05-18 16:40:13","Pendiente","321341243344","1","16");
+INSERT INTO pedidos VALUES("54","17","2025-05-18 16:42:07","Finalizado","222222222222","1","17");
+INSERT INTO pedidos VALUES("55","9","2025-07-08 09:23:50","Rechazado","222222222222","0","");
+INSERT INTO pedidos VALUES("56","8","2026-01-17 06:53:02","Aceptado","123223123133","0","");
+INSERT INTO pedidos VALUES("57","8","2026-01-17 07:45:18","Aceptado","123223123133","0","");
+INSERT INTO pedidos VALUES("58","8","2026-01-17 08:40:20","Aceptado","122222222222","0","");
+INSERT INTO pedidos VALUES("59","8","2026-01-17 13:53:18","Pendiente","123223123133","0","");
+INSERT INTO pedidos VALUES("60","8","2026-01-17 15:51:22","Pendiente","123223123133","0","");
+INSERT INTO pedidos VALUES("61","8","2026-01-17 15:52:14","Pendiente","211111111111","0","");
+INSERT INTO pedidos VALUES("62","8","2026-01-17 16:14:23","Pendiente","123223123133","1","");
+INSERT INTO pedidos VALUES("63","8","2026-01-17 18:23:44","Pendiente","123223123133","0","");
 
 
 
@@ -450,14 +461,12 @@ CREATE TABLE `persona` (
   `telefono` varchar(20) DEFAULT NULL,
   `email` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`idpersona`)
-) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
-INSERT INTO persona VALUES("6","Cliente","Josber","CEDULA","30428838","sdsdsds","04125267690","nietoj.1128@gmail.com");
 INSERT INTO persona VALUES("7","Proveedor","Yulieth nieto","CEDULA","30428838","sdsdsds","04125267690","nietoj.1128@gmail.com");
-INSERT INTO persona VALUES("13","Proveedor","Samuel Paraco","CEDULA","3999999","Ni idea","04120444652","sam1@hotmail.com");
-INSERT INTO persona VALUES("14","Proveedor","Josber","CEDULA","12","12","1212","josberhernandez1@gmail.com");
 INSERT INTO persona VALUES("15","Cliente","Samuel","CEDULA","12","12","12","josberhernandez1@gmail.com");
-INSERT INTO persona VALUES("16","Cliente","Josber","CEDULA","12121","12","1212","1212@gmail.com");
+INSERT INTO persona VALUES("17","Proveedor","Josber","CEDULA","30016813","LA CHAPA","04120444652","josberhernandez1@gmail.com");
+INSERT INTO persona VALUES("18","Proveedor","Natanael Bernal","CEDULA","30016813","Maracay","04129180309","bernalnatanael323@gmail.com");
 
 
 
@@ -476,29 +485,18 @@ CREATE TABLE `suscripciones` (
   `imagen_perfil` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `correo` (`correo`)
-) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 INSERT INTO suscripciones VALUES("1","Admin","","04125267690","2024-09-06 20:05:38","29899544","$2y$10$pw4.8qnY0TM8.TDFgVMaA.3KwFGLrz61dWiHkdQ.BEpGukG8deM/K","","0000-00-00 00:00:00","");
 INSERT INTO suscripciones VALUES("3","yulieth nieto","coreliznieto@gmail.com","04125267690","2024-09-06 20:12:04","29899544","$2y$10$77EWfVGvmXXaWKcbUFYzmOQrKuuuw3UUJCXaw30tPpA/jHv9A/ko.","","0000-00-00 00:00:00","");
-INSERT INTO suscripciones VALUES("4","jjhsuhkd ijsoasma","michelnieto@gmail.com","04243556748","2024-09-06 20:19:54","29899544","$2y$10$1AWQ2AgcXo1zrKtMwpXYJeSodFU1IgQr.X289.181LP4kpbb2U.TG","","0000-00-00 00:00:00","");
-INSERT INTO suscripciones VALUES("5","zddd  ssadsfs","miejshs@gmail.com","04125267690","2024-09-06 20:22:34","3373916","$2y$10$yknqpGK0Q1rNvsmeJXtuOOveHvHxwAti/qqELLPNWtkq6gQqVAb9.","","0000-00-00 00:00:00","");
 INSERT INTO suscripciones VALUES("6","juan","yostyn_medina@hotmail.com","04121345204","2024-09-12 17:38:01","1234567","$2y$10$c84UWA2HHKc1/REzlcH/MuTx14Ff3rAcEtfkm7z9YW9IlXnFi11Sy","","0000-00-00 00:00:00","");
 INSERT INTO suscripciones VALUES("7","Yostyn","yostynmedina550@gmail.com","04121345204","2024-09-17 14:06:10","1234567","$2y$10$h66Uf/.JciMCNiFoAgmN1eojufEpVBiFOydmgq4iHOtY/gfMxs94u","86c2d8cc9d25b3816e46c80635e8514d0bc04749207c333c3c798da0a50620ea","2024-10-07 08:34:14","");
 INSERT INTO suscripciones VALUES("8","Josber Arceniz Hernández Pernia","josberhernandez1@gmail.com","04120444652","2024-09-22 17:34:55","29554820","$2y$10$N8HFhvgWOl276/aqecZiFuHkv.FLHAdv3f60nXD61lWPX/JAS.KTy","d393f13cc97f6243389384842543b274f6e5ddbc6224987fe6ab998426408e69","2024-10-07 08:40:03","");
 INSERT INTO suscripciones VALUES("9","Samuel ","Samu1@gmail.com","04120444652","2024-09-29 20:07:20","29554820","$2y$10$vswQHf1p1Sp.QHH4W/H0VuQExhDYKUoXOhBKKv6CTVyXgddDClhq6","","0000-00-00 00:00:00","");
-INSERT INTO suscripciones VALUES("10","Samuel44","Samu12@gmail.com","04120444652","2024-09-29 20:20:25","29554820","$2y$10$T/fuLTdyzJubUiiqvDhIbuGzOIZmmvhDCxgGvrrHcvwNEa26VRjYS","","0000-00-00 00:00:00","");
-INSERT INTO suscripciones VALUES("11","Samuel45","samu45@gmail.com","04243576091","2024-09-29 20:27:28","29554820","$2y$10$xN.cIq1xdjwylbpVbgbZ/.ZUy5zQ5Cdb.eGoCWeH.SsNPTgQxD5sW","","0000-00-00 00:00:00","");
 INSERT INTO suscripciones VALUES("12","Jos12","Jos12@gmail.com","04120444652","2024-09-29 20:29:25","29554820","$2y$10$HyXyvFEKQAF55/1BX8Vfeu/oF52X4VVCVv1/gd3QJD0KbJrz6DGpK","","0000-00-00 00:00:00","assets/img/uploads/1740383964_WhatsApp Image 2023-09-04 at 10.47.24 AM.jpeg");
-INSERT INTO suscripciones VALUES("15","Josber23","josberhernandez2@gmail.com","04243576091","2024-10-06 18:24:32","29554820","$2y$10$Wq5WXdzTO2iAGQ5QGbv06OXMxZDQLYVNFVCJcPziJJDPX6vYUmHoy","","0000-00-00 00:00:00","");
-INSERT INTO suscripciones VALUES("16","Josber25","josberhernandez3@gmail.com","04120444652","2024-10-06 18:25:39","29554820","$2y$10$lTE9xT1Uip6UiVuNPEaLL.J3BVv8zVHUihDYlxyE1Jzi7xj0OTLh2","","0000-00-00 00:00:00","");
-INSERT INTO suscripciones VALUES("17","Josber5","josberhernandez5@gmail.com","04120444652","2024-10-06 18:42:50","29554820","$2y$10$0qysnxiTooPy1KSY/nBW5uUaOFMsNDA9MdDpfPAfpPJkUc9SP9gBK","","0000-00-00 00:00:00","");
-INSERT INTO suscripciones VALUES("18","Josber Hernández","Jj12@gmail.com","04120444652","2024-10-09 08:20:46","29554820","$2y$10$VVLW3eARcYDta.34OJ7THuVpOo5uDb.4ziZeWyMCeicRCS0i/r.RK","","0000-00-00 00:00:00","");
-INSERT INTO suscripciones VALUES("21","Josber14","josberhernandez20@gmail.com","04140444652","2024-11-16 19:57:17","29554820","$2y$10$MxaUwyIapQ938TA4M76VUO1TMxoW5fyFxjmE9z5cFiDVSNLb1ZXE.","","0000-00-00 00:00:00","");
-INSERT INTO suscripciones VALUES("23","Josber233","josbe@gmail.com","04140444652","2024-11-19 05:57:47","29554820","$2y$10$mAQ2B/mbza8zBWf/6H1umujO9oc7S21n/E.DPKM6Q3ZapgnwIai96","","0000-00-00 00:00:00","");
-INSERT INTO suscripciones VALUES("24","Josber Hernández","j2@gmail.com","04120444652","2024-11-26 10:28:05","29554820","$2y$10$/Msz94kFcdXD.c50lwRMtutDfW4Hfx/iVEaeq0Exbj3oSzsujvsn2","","0000-00-00 00:00:00","");
-INSERT INTO suscripciones VALUES("25","Jos","j22@gmail.com","04120444652","2024-11-26 10:29:30","29554820","$2y$10$cAnriU.W8FsRla02sCkhVuD4.5e24mpVMJtEno6vAGQ8twu0VdCmm","","0000-00-00 00:00:00","");
 INSERT INTO suscripciones VALUES("26","Karlis","karlis@12.com","04120444652","2024-12-03 10:37:46","12345678","$2y$10$HccN2Ql/9KzDy2y4eJjU4.yORcRgZrpQpNLaDRq7ASE0NsUK1l5bO","","0000-00-00 00:00:00","");
 INSERT INTO suscripciones VALUES("27","Karly","karlis12@gmail.com","04120444652","2024-12-03 10:39:48","29554820","$2y$10$Lao0BGLtwyxznSR5/e0U4.8EIXRFyzIWfYS1MWSDKM3k1rZ9tPXc6","","0000-00-00 00:00:00","");
+INSERT INTO suscripciones VALUES("28","Josejose","jonicssf2beta@gmail.com","041238382323223","2025-11-02 05:01:18","29554820","$2y$10$2Co.JFdUurOOHHPO0qbVleIMMe5BzHE0649rjN6ylLa6wVRRfOt7u","","","");
 
 
 
@@ -527,7 +525,7 @@ INSERT INTO usuario VALUES("1","Admin","DNI","63238","Conocido","27386126","admi
 INSERT INTO usuario VALUES("21","Yostyn Medina US","CEDULA","30016813","LA CHAPA","04140709794","yostynmedina550@gmail.com","Empacador","Yostyn","$2y$10$ZHHVC/JBp/l9iMpUqbFvW.vzQvHWzFuPllTiq.lWpjQ29DH61rsfq","1731809257.png","1","","0000-00-00 00:00:00");
 INSERT INTO usuario VALUES("22","Yostyn 2","CEDULA","30016813","LA CHAPA","04140709794","yostynmedina550@gmail.com","Admin","Yostyn2","a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3","1728277528.png","1","","0000-00-00 00:00:00");
 INSERT INTO usuario VALUES("23","Samuel","CEDULA","30016813","maracay","04125267690","admin@gmail.com","Profe","Samu","$2y$10$sTSe1avPcLHNZNCyDMunauA1F0Z5a3tilxQKeCQELHMXIahsdoLLO","1733746949.jpg","1","","0000-00-00 00:00:00");
-INSERT INTO usuario VALUES("24","Josber","CEDULA","30016813","LA CHAPA","","","Empacador","Josber","$2y$10$N4BFQgHWCB/Cf8NGPLooCuULsVudw4TLxRsweVQqLBfKHIzI1u55a","1733218274.jpg","1","","0000-00-00 00:00:00");
+INSERT INTO usuario VALUES("24","Josber","CEDULA","30016813","LA CHAPA","04120444652","","Empacador","Josber","$2y$10$0q/n1AEnC2faiAqOqPgKFuZFII20Y.Y259Qnh9EXghmcZJ2vSV4vS","1733218274.jpg","1","","0000-00-00 00:00:00");
 INSERT INTO usuario VALUES("25","Josber","DNI","29554821","","dasdasdas","","Admin","Jos","$2y$10$jOoSnFABRB2Uj56OIAHYFeMSunP9aB68DJcQ/IwIdiBb246KKNCBe","","1","","0000-00-00 00:00:00");
 
 
@@ -543,7 +541,7 @@ CREATE TABLE `usuario_permiso` (
   KEY `fk_usuario_permiso_usuario_idx` (`idusuario`),
   CONSTRAINT `fk_usuario_permiso_permiso` FOREIGN KEY (`idpermiso`) REFERENCES `permiso` (`idpermiso`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_usuario_permiso_usuario` FOREIGN KEY (`idusuario`) REFERENCES `usuario` (`idusuario`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=392 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=405 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 INSERT INTO usuario_permiso VALUES("273","22","1");
 INSERT INTO usuario_permiso VALUES("274","22","2");
@@ -559,9 +557,6 @@ INSERT INTO usuario_permiso VALUES("305","1","6");
 INSERT INTO usuario_permiso VALUES("306","1","7");
 INSERT INTO usuario_permiso VALUES("344","25","2");
 INSERT INTO usuario_permiso VALUES("345","25","1");
-INSERT INTO usuario_permiso VALUES("356","24","2");
-INSERT INTO usuario_permiso VALUES("357","24","3");
-INSERT INTO usuario_permiso VALUES("358","24","1");
 INSERT INTO usuario_permiso VALUES("383","21","2");
 INSERT INTO usuario_permiso VALUES("384","21","3");
 INSERT INTO usuario_permiso VALUES("385","21","4");
@@ -571,6 +566,12 @@ INSERT INTO usuario_permiso VALUES("388","23","2");
 INSERT INTO usuario_permiso VALUES("389","23","3");
 INSERT INTO usuario_permiso VALUES("390","23","5");
 INSERT INTO usuario_permiso VALUES("391","23","1");
+INSERT INTO usuario_permiso VALUES("399","24","2");
+INSERT INTO usuario_permiso VALUES("400","24","3");
+INSERT INTO usuario_permiso VALUES("401","24","5");
+INSERT INTO usuario_permiso VALUES("402","24","6");
+INSERT INTO usuario_permiso VALUES("403","24","7");
+INSERT INTO usuario_permiso VALUES("404","24","1");
 
 
 
@@ -592,13 +593,14 @@ CREATE TABLE `venta` (
   KEY `fk_venta_usuario_idx` (`idusuario`),
   CONSTRAINT `fk_venta_persona` FOREIGN KEY (`idcliente`) REFERENCES `persona` (`idpersona`) ON DELETE CASCADE,
   CONSTRAINT `fk_venta_usuario` FOREIGN KEY (`idusuario`) REFERENCES `usuario` (`idusuario`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
-INSERT INTO venta VALUES("4","6","1","Factura","ffff","222","2024-07-03 00:00:00","18.00","130.00","Aceptado");
-INSERT INTO venta VALUES("7","6","1","Factura","2","2","2024-09-22 00:00:00","10.00","0.00","Aceptado");
 INSERT INTO venta VALUES("9","15","1","Factura","","2","2024-09-22 00:00:00","0.00","0.00","Anulado");
 INSERT INTO venta VALUES("10","15","1","Factura","2","2","2016-01-22 00:00:00","0.00","2.00","Anulado");
 INSERT INTO venta VALUES("11","15","1","Factura","2","1","2024-09-23 00:00:00","0.00","44.00","Anulado");
+INSERT INTO venta VALUES("12","15","1","Factura","321","2121","2026-01-11 00:00:00","12.00","138.00","Aceptado");
+INSERT INTO venta VALUES("13","17","1","Factura","121323","2233223","2026-01-16 00:00:00","0.00","195.00","Aceptado");
+INSERT INTO venta VALUES("14","18","1","Factura","1231231","312321","2026-01-06 00:00:00","0.00","225.00","Aceptado");
 
 
 

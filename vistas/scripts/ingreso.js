@@ -11,6 +11,11 @@ function init()
         guardaryeditar(e);
     });
 
+    // Agregar evento para cálculo automático cuando cambie el impuesto
+    $("#impuesto").on("change keyup", function() {
+        modificarSubtotales();
+    });
+
     $.post(
         "../ajax/ingreso.php?op=selectProveedor",
         function(data)
@@ -142,6 +147,34 @@ function guardaryeditar(e)
 {
     e.preventDefault(); //No se activará la acción predeterminada del evento
 	//$("#btnGuardar").prop("disabled",true);
+    
+    // Validar que existan detalles
+    if (detalles <= 0) {
+        bootbox.alert("⚠️ Debe agregar al menos un artículo al ingreso");
+        return;
+    }
+    
+    // Validar que todos los campos de detalles tengan valores válidos
+    var cantidades = document.getElementsByName("cantidad[]");
+    var precios_compra = document.getElementsByName("precio_compra[]");
+    
+    for (var i = 0; i < cantidades.length; i++) {
+        var cantidad = parseFloat(cantidades[i].value) || 0;
+        var precio = parseFloat(precios_compra[i].value) || 0;
+        
+        if (cantidad <= 0 || precio <= 0) {
+            bootbox.alert("⚠️ La cantidad y el precio de compra deben ser mayores a 0");
+            return;
+        }
+    }
+    
+    // Validar que el total sea mayor a 0
+    var total = parseFloat($("#total_compra").val()) || 0;
+    if (total <= 0) {
+        bootbox.alert("⚠️ El total del ingreso debe ser mayor a 0");
+        return;
+    }
+    
     var formData = new FormData($("#formulario")[0]);
     
     $.ajax({
@@ -236,6 +269,7 @@ function anular(idingreso)
 var impuesto = 16;
 var cont = 0;
 var detalles= 0;
+var totalAnterior = 0; // Variable para tracking de cambios en el total
 
 $("#btnGuardar").hide();
 $("#tipo_comprobante").change(marcarImpuesto);
@@ -251,6 +285,9 @@ function marcarImpuesto()
     {
         $("#impuesto").val('0');
     }
+    
+    // Actualizar totales automáticamente cuando cambie el tipo de comprobante
+    modificarSubtotales();
 }
 
 function agregarDetalle(idarticulo,articulo)
@@ -261,8 +298,7 @@ function agregarDetalle(idarticulo,articulo)
 
     if(idarticulo != "")
     {
-        var subtotal = cantidad * precio_compra;
-        var fila = '<tr class="filas" id="fila'+cont+'"> ' +
+        var fila = '<tr class="filas" id="fila'+cont+'">' +
                       '<td>'+
                            '<button type="button" class="btn btn-danger" onclick="eliminarDetalle('+cont+')">X</button>'+
                        '</td>'+
@@ -271,21 +307,19 @@ function agregarDetalle(idarticulo,articulo)
                            articulo +
                        '</td>'+
                       '<td>' +
-                          '<input type="number" name="cantidad[]" id="cantidad[]" value="'+cantidad+'">'+
+                          '<input type="number" name="cantidad[]" id="cantidad[]" value="'+cantidad+'" min="1" onchange="modificarSubtotales()" onkeyup="modificarSubtotales()">'+
                        '</td>'+
                       '<td>' +
-                          '<input type="number" name="precio_compra[]" id="precio_compra[]" value="'+precio_compra+'">'+
+                          '<input type="number" name="precio_compra[]" id="precio_compra[]" value="'+precio_compra+'" min="0.01" step="0.01" onchange="modificarSubtotales()" onkeyup="modificarSubtotales()">'+
                        '</td>'+
                       '<td>' +
-                          '<input type="number" name="precio_venta[]" id="precio_venta[]" value="'+precio_venta+'">'+
+                          '<input type="number" name="precio_venta[]" id="precio_venta[]" value="'+precio_venta+'" min="0.01" step="0.01">'+
                        '</td>'+
                       '<td>' +
-                          '<span name="subtotal" id="subtotal'+cont+'">'+subtotal+'</span>'+
-                       '</td>'+
-                      '<td>' +
-                          '<button type="button" class="btn btn-info" onclick="modificarSubtotales()">'+
-                            '<i class="fa fa-refresh"></i>'+
+                          '<button type="button" class="btn btn-danger" onclick="eliminarDetalle('+cont+')">'+
+                            '<i class="fa fa-close"></i>'+
                           '</button>'+
+                          '<input type="hidden" name="subtotal" id="subtotal'+cont+'" value="'+(cantidad * precio_compra)+'">'+
                        '</td>'+
                    '</tr>';
 
@@ -296,8 +330,17 @@ function agregarDetalle(idarticulo,articulo)
     }
     else
     {
-        alert("Error al ingresar el detalle, revisar los ddatos del articulo");
+        alert("Error al ingresar el detalle, revisar los datos del articulo");
     }
+}
+
+function formatCurrency(amount) {
+    return new Intl.NumberFormat('es-VE', {
+        style: 'currency',
+        currency: 'VES',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    }).format(amount);
 }
 
 function modificarSubtotales()
@@ -307,6 +350,7 @@ function modificarSubtotales()
     var sub = document.getElementsByName("subtotal");
 
     var tamañoCant = cant.length;
+    var totalValido = true;
 
     for (var i = 0; i < tamañoCant; i++) 
     {
@@ -314,26 +358,85 @@ function modificarSubtotales()
         var inpP = prec[i];
         var inpS = sub[i];
 
-        inpS.value = inpC.value * inpP.value;
-        document.getElementsByName("subtotal")[i].innerHTML = inpS.value;
+        // Validar que los valores sean numéricos y positivos
+        var cantidad = parseFloat(inpC.value) || 0;
+        var precio = parseFloat(inpP.value) || 0;
+
+        if (cantidad <= 0 || precio <= 0) {
+            totalValido = false;
+        }
+
+        var subtotalCalculado = cantidad * precio;
+        document.getElementsByName("subtotal")[i].value = subtotalCalculado;
+    }
+
+    if (!totalValido && tamañoCant > 0) {
+        console.warn("⚠️ Advertencia: Existen valores inválidos (cantidad o precio <= 0)");
     }
 
     calcularTotales();
 }
 
+function mostrarNotificacion(mensaje, tipo = 'success') {
+    var notificacion = $('<div class="alert alert-' + tipo + ' alert-dismissible fade in" role="alert" style="position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 250px;">' +
+        '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+        mensaje +
+        '</div>');
+    
+    $('body').append(notificacion);
+    
+    // Auto-cerrar después de 3 segundos
+    setTimeout(function() {
+        notificacion.alert('close');
+    }, 3000);
+}
+
 function calcularTotales()
 {
     var sub = document.getElementsByName("subtotal");
-    var total = 0.0;
-
+    var subtotal = 0.0;
+    var impuesto = parseFloat($("#impuesto").val()) || 0;
+    
     var tamSub = sub.length;
 
     for (var i = 0; i < tamSub; i++) {
-        total += document.getElementsByName("subtotal")[i].value;
+        var subtotalValue = parseFloat(document.getElementsByName("subtotal")[i].value) || 0;
+        subtotal += subtotalValue;
     }
 
-    $("#total").html("$ "+ total);
-    $("#total_compra").val(total);
+    var monto_impuesto = subtotal * (impuesto / 100);
+    var total = subtotal + monto_impuesto;
+
+    // Mostrar desglose detallado
+    var desglose = '<div style="text-align: right; font-size: 12px;">';
+    desglose += '<div>Subtotal: ' + formatCurrency(subtotal) + '</div>';
+    if (impuesto > 0) {
+        desglose += '<div>IVA (' + impuesto + '%): ' + formatCurrency(monto_impuesto) + '</div>';
+    }
+    desglose += '<hr style="margin: 5px 0;">';
+    desglose += '<div style="font-weight: bold; font-size: 16px;">TOTAL: ' + formatCurrency(total) + '</div>';
+    desglose += '</div>';
+
+    $("#total").html(desglose);
+    $("#total-footer").html(formatCurrency(total));
+    $("#total_compra").val(total.toFixed(2));
+
+    // Mostrar notificación visual del total
+    if (total > 0) {
+        $("#total").addClass('alert alert-success');
+        $("#total").css('padding', '10px 20px');
+        $("#total-footer").parent().addClass('alert alert-success');
+        
+        // Mostrar notificación de total actualizado
+        if (typeof totalAnterior !== 'undefined' && total !== totalAnterior) {
+            mostrarNotificacion('💰 Total actualizado: ' + formatCurrency(total), 'info');
+        }
+        totalAnterior = total;
+    } else {
+        $("#total").removeClass('alert alert-success');
+        $("#total").css('padding', '10px 20px');
+        $("#total-footer").parent().removeClass('alert alert-success');
+    }
 
     evaluar();
 }

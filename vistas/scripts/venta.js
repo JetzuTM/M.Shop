@@ -13,7 +13,12 @@ function init(){
 	$.post("../ajax/venta.php?op=selectCliente", function(r){
 	            $("#idcliente").html(r);
 	            $('#idcliente').selectpicker('refresh');
-	});	
+	});
+	
+	// Agregar evento para cálculo automático cuando cambie el impuesto
+	$("#impuesto").on("change keyup", function() {
+		calcularTotales();
+	});
 }
 
 //Función limpiar
@@ -134,6 +139,34 @@ function guardaryeditar(e)
 {
 	e.preventDefault(); //No se activará la acción predeterminada del evento
 	//$("#btnGuardar").prop("disabled",true);
+	
+	// Validar que existan detalles
+	if (detalles <= 0) {
+		bootbox.alert("⚠️ Debe agregar al menos un artículo a la venta");
+		return;
+	}
+	
+	// Validar que todos los campos de detalles tengan valores válidos
+	var cantidades = document.getElementsByName("cantidad[]");
+	var precios_venta = document.getElementsByName("precio_venta[]");
+	
+	for (var i = 0; i < cantidades.length; i++) {
+		var cantidad = parseFloat(cantidades[i].value) || 0;
+		var precio = parseFloat(precios_venta[i].value) || 0;
+		
+		if (cantidad <= 0 || precio <= 0) {
+			bootbox.alert("⚠️ La cantidad y el precio de venta deben ser mayores a 0");
+			return;
+		}
+	}
+	
+	// Validar que el total sea mayor a 0
+	var total = parseFloat($("#total_venta").val()) || 0;
+	if (total <= 0) {
+		bootbox.alert("⚠️ El total de la venta debe ser mayor a 0");
+		return;
+	}
+	
 	var formData = new FormData($("#formulario")[0]);
 
 	$.ajax({
@@ -201,6 +234,7 @@ function anular(idventa)
 var impuesto=18;
 var cont=0;
 var detalles=0;
+var totalAnterior = 0; // Variable para tracking de cambios en el total
 //$("#guardar").hide();
 $("#btnGuardar").hide();
 $("#tipo_comprobante").change(marcarImpuesto);
@@ -216,6 +250,9 @@ function marcarImpuesto()
     {
         $("#impuesto").val("0"); 
     }
+    
+    // Actualizar totales automáticamente cuando cambie el tipo de comprobante
+    calcularTotales();
   }
 
 function agregarDetalle(idarticulo,articulo,precio_venta)
@@ -225,55 +262,151 @@ function agregarDetalle(idarticulo,articulo,precio_venta)
 
     if (idarticulo!="")
     {
-    	var subtotal=cantidad*precio_venta;
-    	var fila='<tr class="filas" id="fila'+cont+'">'+
-    	'<td><button type="button" class="btn btn-danger" onclick="eliminarDetalle('+cont+')">X</button></td>'+
-    	'<td><input type="hidden" name="idarticulo[]" value="'+idarticulo+'">'+articulo+'</td>'+
-    	'<td><input type="number" name="cantidad[]" id="cantidad[]" value="'+cantidad+'"></td>'+
-    	'<td><input type="number" name="precio_venta[]" id="precio_venta[]" value="'+precio_venta+'"></td>'+
-    	'<td><input type="number" name="descuento[]" value="'+descuento+'"></td>'+
-    	'<td><span name="subtotal" id="subtotal'+cont+'">'+subtotal+'</span></td>'+
-    	'<td><button type="button" onclick="modificarSubototales()" class="btn btn-info"><i class="fa fa-refresh"></i></button></td>'+
-    	'</tr>';
+      // Validar que el precio sea válido
+      if (precio_venta <= 0 || isNaN(precio_venta)) {
+        mostrarNotificacion("⚠️ Precio inválido. Se usará $1.00 como valor predeterminado.", "warning");
+        precio_venta = 1;
+      }
+      
+  		var subtotal=cantidad*precio_venta;
+  		var fila='<tr class="filas" id="fila'+cont+'">'+
+  		'<td><button type="button" class="btn btn-danger" onclick="eliminarDetalle('+cont+')">X</button></td>'+
+  		'<td><input type="hidden" name="idarticulo[]" value="'+idarticulo+'">'+articulo+'</td>'+
+  		'<td><input type="number" name="cantidad[]" id="cantidad[]" value="'+cantidad+'" min="1" onchange="modificarSubototales()" onkeyup="modificarSubototales()"></td>'+
+  		'<td><input type="number" name="precio_venta[]" id="precio_venta[]" value="'+precio_venta+'" min="0.01" step="0.01" onchange="modificarSubototales()" onkeyup="modificarSubototales()"></td>'+
+  		'<td><input type="number" name="descuento[]" value="'+descuento+'" min="0" onchange="modificarSubototales()" onkeyup="modificarSubototales()"></td>'+
+  		'<td><button type="button" onclick="eliminarDetalle('+cont+')" class="btn btn-danger"><i class="fa fa-close"></i></button>'+
+  		'<input type="hidden" name="subtotal" id="subtotal'+cont+'" value="'+subtotal+'">'+
+  		'</td>'+
+  		'</tr>';
     	cont++;
     	detalles=detalles+1;
     	$('#detalles').append(fila);
+    	
     	modificarSubototales();
     }
     else
     {
-    	alert("Error al ingresar el detalle, revisar los datos del artículo");
+    	mostrarNotificacion("❌ Error al ingresar el detalle, revisar los datos del artículo", "danger");
     }
   }
 
   function modificarSubototales()
   {
-  	var cant = document.getElementsByName("cantidad[]");
+    var cant = document.getElementsByName("cantidad[]");
     var prec = document.getElementsByName("precio_venta[]");
     var desc = document.getElementsByName("descuento[]");
     var sub = document.getElementsByName("subtotal");
 
-    for (var i = 0; i <cant.length; i++) {
-    	var inpC=cant[i];
-    	var inpP=prec[i];
-    	var inpD=desc[i];
-    	var inpS=sub[i];
+    var tamañoCant = cant.length;
+    var totalValido = true;
 
-    	inpS.value=(inpC.value * inpP.value)-inpD.value;
-    	document.getElementsByName("subtotal")[i].innerHTML = inpS.value;
+    for (var i = 0; i < tamañoCant; i++) 
+    {
+      var inpC = cant[i];
+      var inpP = prec[i];
+      var inpD = desc[i];
+      var inpS = sub[i];
+
+      // Validar que los valores sean numéricos y positivos
+      var cantidad = parseFloat(inpC.value) || 0;
+      var precio = parseFloat(inpP.value) || 0;
+      var descuento = parseFloat(inpD.value) || 0;
+
+      if (cantidad <= 0 || precio <= 0) {
+        totalValido = false;
+      }
+
+      var subtotalCalculado = (cantidad * precio) - descuento;
+      document.getElementsByName("subtotal")[i].value = subtotalCalculado;
     }
-    calcularTotales();
 
+    if (!totalValido && tamañoCant > 0) {
+      console.warn("⚠️ Advertencia: Existen valores inválidos (cantidad o precio <= 0)");
+    }
+
+    calcularTotales();
   }
+function formatCurrency(amount) {
+    return new Intl.NumberFormat('es-VE', {
+        style: 'currency',
+        currency: 'VES',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    }).format(amount);
+}
+
+function mostrarNotificacion(mensaje, tipo = 'success') {
+    var notificacion = $('<div class="alert alert-' + tipo + ' alert-dismissible fade in" role="alert" style="position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 250px;">' +
+        '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+        mensaje +
+        '</div>');
+    
+    $('body').append(notificacion);
+    
+    // Auto-cerrar después de 3 segundos
+    setTimeout(function() {
+        notificacion.alert('close');
+    }, 3000);
+}
+
   function calcularTotales(){
   	var sub = document.getElementsByName("subtotal");
-  	var total = 0.0;
+  	var subtotal = 0.0;
+  	var impuesto = parseFloat($("#impuesto").val()) || 0;
+  	
+  	var tamSub = sub.length;
 
-  	for (var i = 0; i <sub.length; i++) {
-		total += document.getElementsByName("subtotal")[i].value;
-	}
-	$("#total").html("BsD/. " + total);
-    $("#total_venta").val(total);
+  	for (var i = 0; i < tamSub; i++) {
+  		var subtotalValue = parseFloat(document.getElementsByName("subtotal")[i].value) || 0;
+  		subtotal += subtotalValue;
+  	}
+
+  	var monto_impuesto = subtotal * (impuesto / 100);
+  	var total = subtotal + monto_impuesto;
+
+  	// Mostrar desglose detallado
+  	var desglose = '<div style="text-align: right; font-size: 12px;">';
+  	desglose += '<div>Subtotal: ' + formatCurrency(subtotal) + '</div>';
+  	if (impuesto > 0) {
+  		desglose += '<div>IVA (' + impuesto + '%): ' + formatCurrency(monto_impuesto) + '</div>';
+  	}
+  	desglose += '<hr style="margin: 5px 0;">';
+  	desglose += '<div style="font-weight: bold; font-size: 16px;">TOTAL: ' + formatCurrency(total) + '</div>';
+  	desglose += '</div>';
+
+  	$("#total").html(desglose);
+    $("#total_venta").val(total.toFixed(2));
+    
+    // Actualizar también el total superior con formato simple
+    $("#total-superior").html('<h4 style="margin: 0;">' + formatCurrency(total) + '</h4>');
+    
+    // Actualizar el total-footer en el pie de la tabla
+    $("#total-footer").html(formatCurrency(total));
+    
+    // Mejoras visuales cuando hay total
+    if (total > 0) {
+        $("#total").addClass('alert alert-success');
+        $("#total").css('padding', '10px 20px');
+        $("#total-superior").addClass('alert alert-success');
+        $("#total-superior").css('padding', '10px 20px');
+        $("#total-footer").parent().addClass('alert alert-success');
+        $("#total-footer").css('font-weight', 'bold');
+        
+        // Mostrar notificación de total actualizado
+        if (typeof totalAnterior !== 'undefined' && total !== totalAnterior) {
+            mostrarNotificacion('💰 Total actualizado: ' + formatCurrency(total), 'info');
+        }
+        totalAnterior = total;
+    } else {
+        $("#total").removeClass('alert alert-success');
+        $("#total").css('padding', '10px 20px');
+        $("#total-superior").removeClass('alert alert-success');
+        $("#total-superior").css('padding', '10px 20px');
+        $("#total-footer").parent().removeClass('alert alert-success');
+        $("#total-footer").css('font-weight', 'normal');
+    }
+    
     evaluar();
   }
 

@@ -86,45 +86,57 @@
                             <input type="text" class="form-control" name="num_comprobante" id="num_comprobante" maxlength="10" placeholder="Numero">
                           </div>
                           <div class="form-group col-lg-2 col-md-2 col-sm-6 col-xs-12">
-                            <label>Impuesto:</label>
-                            <input type="text" class="form-control" name="impuesto" id="impuesto" required>
+                            <label>Impuesto (%):</label>
+                            <input type="number" class="form-control" name="impuesto" id="impuesto" min="0" max="100" step="0.01" placeholder="0" title="Porcentaje de impuesto a aplicar">
                           </div>
 
                           <div class="form-group col-lg-3 col-md-3 col-sm-6 col-xs-12">
                               <a data-toggle="modal" href="#myModal" >
-                                <button id="btnAgregarArt" type="button" class="btn btn-primary">
-                                  <span class="fa fa-plus"></span>
-                                  Agregar Articulos
-                                </button>
                               </a>
                           </div>
 
                           <div class="form-group col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                              <table id="detalles" class="table table-striped table-bordered table-condensed table-hover">
-                                <thead style="background-color:#A9D0F5">
-                                  <th>Articulos</th>
-                                  <th>Cantidad</th>
-                                  <th>Precio Compra</th>
-                                  <th>Precio Venta</th>
-                                  <th>Subtotal</th>
-                                  <th>Opciones</th>
+                              <div class="panel panel-info">
+                                <div class="panel-heading">
+                                  <h3 class="panel-title">Detalle de Artículos</h3>
+                                </div>
+                                <div class="panel-body">
+                                  <div class="row">
+                                    <div class="col-md-3">
+                                      <button type="button" id="btnAgregarArt" class="btn btn-primary" data-toggle="modal" href="#myModal">
+                                        <span class="fa fa-plus"></span> Agregar Artículos
+                                      </button>
+                                    </div>
+                                    <div class="col-md-9 text-right">
+                                      <div id="total" class="alert alert-success" style="display: inline-block; margin: 0; padding: 10px 20px;">
+                                        <h4 style="margin: 0;">BsD 0.00</h4>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <hr>
+                                  <table id="detalles" class="table table-striped table-bordered table-condensed table-hover">
+                                    <thead style="background-color:#A9D0F5">
+                                      <th>Artículo</th>
+                                      <th>Cantidad</th>
+                                      <th>Precio Compra</th>
+                                      <th>Precio Venta</th>
+                                    </thead>
+                                    <tfoot>
+                                      <tr>
+                                        <th colspan="3" style="text-align: right;">TOTAL:</th>
+                                        <th style="text-align: right;">
+                                          <h4 id="total-footer">BsD 0.00</h4>
+                                          <input type="hidden" name="total_compra" id="total_compra">
+                                        </th>
+                                        <th></th>
+                                      </tr>
+                                    </tfoot>
+                                    <tbody>
 
-                                </thead>
-                                <tfoot>
-                                  <th>TOTAL</th>
-                                  <th></th>
-                                  <th></th>
-                                  <th></th>
-                                  <th></th>
-                                  <th>
-                                    <h4 id="total">BsD 0.00</h4>
-                                    <input type="hidden" name="total_compra" id="total_compra">
-                                  </th>
-                                </tfoot>
-                                <tbody>
-
-                                </tbody>
-                              </table>
+                                    </tbody>
+                                  </table>
+                                </div>
+                              </div>
                           </div>
                           
                           <div class="form-group col-lg-12 col-md-12 col-sm-12 col-xs-12">
