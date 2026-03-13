@@ -88,33 +88,49 @@ if ($_SESSION['ventas']==1)
                             <label>Impuesto:</label>
                             <input type="text" class="form-control" name="impuesto" id="impuesto" required="">
                           </div>
-                          <div class="form-group col-lg-3 col-md-3 col-sm-6 col-xs-12">
-                            <a data-toggle="modal" href="#myModal">           
-                              <button id="btnAgregarArt" type="button" class="btn btn-primary"> <span class="fa fa-plus"></span> Agregar Artículos</button>
-                            </a>
-                          </div>
-
-                          <div class="col-lg-12 col-sm-12 col-md-12 col-xs-12">
-                            <table id="detalles" class="table table-striped table-bordered table-condensed table-hover">
-                              <thead style="background-color:#A9D0F5">
-                                    <th>Opciones</th>
-                                    <th>Artículo</th>
-                                    <th>Cantidad</th>
-                                    <th>Precio Venta</th>
-                                    <th>Subtotal</th>
-                                </thead>
-                                <tfoot>
-                                    <th>TOTAL</th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    <th><h4 id="total">BsD 0.00</h4><input type="hidden" name="total_venta" id="total_venta"></th> 
-                                </tfoot>
-                                <tbody>
-                                  
-                                </tbody>
-                            </table>
+                          
+                          <div class="form-group col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                              <div class="panel panel-info">
+                                <div class="panel-heading">
+                                  <h3 class="panel-title">Detalle de Artículos</h3>
+                                </div>
+                                <div class="panel-body">
+                                  <div class="row">
+                                    <div class="col-md-3">
+                                      <button type="button" id="btnAgregarArt" class="btn btn-primary" data-toggle="modal" href="#myModal">
+                                        <span class="fa fa-plus"></span> Agregar Artículos
+                                      </button>
+                                    </div>
+                                    <div class="col-md-9 text-right">
+                                      <div id="total" class="alert alert-success" style="display: inline-block; margin: 0; padding: 10px 20px;">
+                                        <h4 style="margin: 0;">BsD 0.00</h4>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <hr>
+                                  <table id="detalles" class="table table-striped table-bordered table-condensed table-hover">
+                                    <thead style="background-color:#A9D0F5">
+                                          <th>Opciones</th>
+                                          <th>Artículo</th>
+                                          <th>Cantidad</th>
+                                          <th>Precio Venta</th>
+                                          <th>Descuento</th>
+                                      </thead>
+                                      <tfoot>
+                                          <tr>
+                                            <th colspan="4" style="text-align: right;">TOTAL:</th>
+                                            <th style="text-align: right;">
+                                              <h4 id="total-footer">BsD 0.00</h4>
+                                              <input type="hidden" name="total_venta" id="total_venta">
+                                            </th>
+                                          </tr>
+                                      </tfoot>
+                                      <tbody>
+                                        
+                                      </tbody>
+                                  </table>
+                                </div>
+                              </div>
                           </div>
 
                           <div class="form-group col-lg-12 col-md-12 col-sm-12 col-xs-12">

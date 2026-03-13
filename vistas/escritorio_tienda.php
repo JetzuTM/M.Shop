@@ -10,9 +10,9 @@ $correo_usuario = isset($_SESSION['correo']) ? $_SESSION['correo'] : null;
 <!DOCTYPE html>
 <html lang="es">
     <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Tienda | MultiShop</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+        <title>Escritorio de Tienda</title>
         <script src="../assets/jquery/jquery.min.js"></script>
 
         <!-- Favicon -->
@@ -29,55 +29,202 @@ $correo_usuario = isset($_SESSION['correo']) ? $_SESSION['correo'] : null;
         <script src="../node_modules/sweetalert2/dist/sweetalert2.all.min.js"></script>
         <link rel="stylesheet" href="../node_modules/sweetalert2/dist/sweetalert2.min.css"> 
         <link rel="stylesheet" href="../css/tienda_estilo.css">
+        <style>
+          /* Theme Variables & Base Styles */
+          :root {
+            --primary: #6e15c2;
+            --primary-dark: #4c0d86;
+            --primary-light: #9b59d6;
+            --accent: #f59e0b;
+            --bg: #f5f3ff;
+            --bg2: #ffffff;
+            --bg3: #f0ebfa;
+            --text: #1e1333;
+            --text-muted: #6b5c8a;
+            --border: rgba(110,21,194,0.12);
+            --card-shadow: 0 4px 24px rgba(110,21,194,0.08);
+            --card-shadow-hover: 0 12px 40px rgba(110,21,194,0.18);
+            --radius: 16px;
+            --transition: 0.35s cubic-bezier(0.4,0,0.2,1);
+          }
+          body {
+            font-family: 'Inter', 'Poppins', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+          }
+          
+          /* Navbar Override */
+          #navbar {
+            background: var(--primary);
+            box-shadow: 0 4px 24px rgba(76,13,134,0.35);
+            padding: 10px 0;
+            margin-bottom: 30px;
+          }
+          .nav-brand {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #fff !important;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+          }
+          #navbar .nav-link {
+            color: rgba(255,255,255,0.85) !important;
+            font-weight: 500;
+            transition: var(--transition);
+          }
+          #navbar .nav-link:hover, #navbar .nav-link.active {
+            color: #fff !important;
+            background: rgba(255,255,255,0.15);
+            border-radius: 8px;
+          }
+          .nav-icon-btn {
+            color: rgba(255,255,255,0.85);
+            font-size: 1.2rem;
+            transition: var(--transition);
+            text-decoration: none;
+            padding: 8px 12px;
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+          }
+          .nav-icon-btn:hover { color: #fff; }
+          .nav-badge {
+            position: absolute; top: 0px; right: 2px;
+            background: var(--accent);
+            color: #000; font-size: 0.65rem; font-weight: 700;
+            border-radius: 50%; padding: 2px 5px;
+          }
+          
+          /* Cards & Blocks */
+          .card {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+            overflow: hidden;
+            margin-bottom: 20px;
+          }
+          .card:hover { box-shadow: var(--card-shadow-hover); }
+          .card-header {
+            background: var(--bg3) !important;
+            border-bottom: 1px solid var(--border) !important;
+            color: var(--primary);
+            font-weight: 700;
+            padding: 1rem 1.25rem;
+          }
+          .list-group-item.active {
+            background-color: rgba(110,21,194,0.1) !important;
+            color: var(--primary) !important;
+            border-color: var(--primary) !important;
+            font-weight: 600;
+          }
+          .btn-custom, .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark)) !important;
+            color: #fff !important;
+            border: none !important;
+            border-radius: 10px !important;
+          }
+          .btn-custom:hover, .btn-primary:hover {
+            box-shadow: 0 4px 15px rgba(110,21,194,0.4) !important;
+            transform: translateY(-2px);
+          }
+          .btn-secondary {
+            background: #fff !important;
+            color: var(--primary) !important;
+            border: 1.5px solid var(--border) !important;
+            border-radius: 10px !important;
+            font-weight: 600;
+          }
+          .btn-secondary:hover {
+            background: rgba(110,21,194,0.05) !important;
+            border-color: rgba(110,21,194,0.3) !important;
+          }
+          .dropdown-menu {
+             border-radius: 12px;
+             border: 1px solid var(--border);
+             box-shadow: var(--card-shadow-hover);
+          }
+          .notification-dropdown {
+            border-radius: 12px !important;
+            border: 1px solid var(--border) !important;
+            box-shadow: var(--card-shadow-hover) !important;
+          }
+          .form-control {
+            background: var(--bg2);
+            border: 1.5px solid var(--border);
+            border-radius: 12px;
+            color: var(--text);
+          }
+          .form-control:focus {
+            background: #fff;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(110,21,194,0.1);
+          }
+        </style>
     </head>
     <body>
-<!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-light">
-    <div class="container-fluid">
-    <div class="logo"></div>
-        <a class="navbar-brand" style="font-family: 'Poppins', sans-serif; font-size: 1.75rem; font-weight: bold; color: white; text-transform: uppercase; letter-spacing: 1px; text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);">
-            Multishop
-        </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-            <li class="nav-item">
-    <a class="nav-link" href='login.php'>Inicio</a>
-</li>
-                <li class="nav-item">
-                    <a class="nav-link active" href="escritorio_tienda.php">Productos</a>
-                    <li class="nav-item">
-    <a class="nav-link" href="#" id="compras-link">Compras</a></li>
-                <!-- Ícono del carrito -->
-                <li class="nav-item">
-    <a class="nav-link" href="#" id="carrito-link">
-        <i class="fas fa-shopping-cart cart-icon"></i>
-        <span id="cart-count" class="badge bg-danger">0</span>
-    </a></li></ul>
-                    <li class="fa-solid fa-bell cart-icon" style="cart-icon"></li> 
-            <span id="cart-count2" class="badge bg-danger">0</span></a></li> 
-                </li>
-                <form class="d-flex" onsubmit="return !estaAutenticado() ? Swal.fire({icon: 'warning', title: 'Debes iniciar sesión', text: 'Para ver tu carrito, por favor inicia sesión.'}).then(() => {window.location.href = 'inicio.php'; return false;}) : true;">
-    <div class="btn-group">
-        <a href="inicio.php" class="btn btn-custom <?php echo isset($_SESSION['idusuario']) ? 'dropdown-toggle' : ''; ?>" <?php echo isset($_SESSION['idusuario']) ? 'data-bs-toggle="dropdown"' : ''; ?>>
-            <i class="fas fa-user"></i> <?php echo isset($_SESSION['nombre']) ? $_SESSION['nombre'] : 'Iniciar Sesión'; ?>
-        </a>
-        <?php if (isset($_SESSION['idusuario'])): ?>
-            <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="./perfil-usuario.php">Perfil</a></li>
-                <li><a class="dropdown-item" href="../ajax/usuario.php?op=salir">Cerrar Sesión</a></li>
-            </ul>
-        <?php endif; ?>
-    </div>
-</form>
-                    </ul>
-                </div>
-            </div>
-        </nav>
+<!-- ========== NAVBAR ========== -->
+<nav id="navbar" class="navbar navbar-expand-lg sticky-top">
+  <div class="container-fluid px-4">
+      <a href="login.php" class="nav-brand">
+        <img src="../public/img/Multi.png" alt="MultiShop Logo" style="height: 40px; margin-right: 8px;">
+        MultiShop
+      </a>
+      <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" style="background: rgba(255,255,255,0.15);">
+          <span class="navbar-toggler-icon" style="filter: invert(1);"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
+              <li class="nav-item"><a class="nav-link" href="login.php">Inicio</a></li>
+              <li class="nav-item"><a class="nav-link active" href="escritorio_tienda.php">Productos</a></li>
+              <li class="nav-item"><a class="nav-link" href="#" id="compras-link">Compras</a></li>
+              <li class="nav-item position-relative mx-1">
+                  <a class="nav-icon-btn" href="#" id="carrito-link">
+                      <i class="fas fa-shopping-cart"></i>
+                      <span id="cart-count" class="nav-badge">0</span>
+                  </a>
+              </li>
+              <li class="nav-item position-relative mx-1">
+                  <a class="nav-icon-btn" href="#" id="notificationBell">
+                      <i class="fa-solid fa-bell"></i>
+                      <span id="notificationCount" class="nav-badge">0</span>
+                  </a>
+                  <div id="notificationDropdown" class="dropdown-menu dropdown-menu-end notification-dropdown position-absolute" style="display: none; top: 100%; right: 0; min-width: 300px; z-index: 1050;">
+                      <div class="notification-header border-bottom p-3 bg-light rounded-top">
+                          <h6 class="mb-0 text-dark fw-bold">Notificaciones</h6>
+                      </div>
+                      <div class="notification-body p-3 text-muted">
+                          <p class="mb-0">No hay notificaciones aún.</p>
+                      </div>
+                      <button id="markAsRead" class="btn btn-light w-100 rounded-bottom border-top text-primary">Marcar como leídas</button>
+                  </div>
+              </li>
+              <li class="nav-item ms-lg-3 mt-2 mt-lg-0">
+                  <div class="d-flex">
+                      <div class="btn-group">
+                          <a href="inicio.php" class="btn btn-custom px-4 <?php echo isset($_SESSION['idusuario']) ? 'dropdown-toggle' : ''; ?>" <?php echo isset($_SESSION['idusuario']) ? 'data-bs-toggle="dropdown"' : ''; ?>>
+                              <i class="fas fa-user me-2"></i> <?php echo isset($_SESSION['nombre']) ? $_SESSION['nombre'] : 'Iniciar Sesión'; ?>
+                          </a>
+                          <?php if (isset($_SESSION['idusuario'])): ?>
+                              <ul class="dropdown-menu dropdown-menu-end">
+                                  <li><a class="dropdown-item" href="./perfil-usuario.php">Perfil</a></li>
+                                  <li><a class="dropdown-item text-danger" href="../ajax/usuario.php?op=salir">Cerrar Sesión</a></li>
+                              </ul>
+                          <?php endif; ?>
+                      </div>
+                  </div>
+              </li>
+          </ul>
+      </div>
+  </div>
+</nav>
         <div class="container mt-5">
-            <h5 class="mb-4 text-center card-title">Lista de Productos</h5>
+            <h4 class="mb-4 text-center" style="font-family: 'Outfit', sans-serif; font-weight: 800; color: var(--primary);">Lista de Productos</h4>
 
             <div class="main-content">  <!-- Contenedor principal -->
                 <div class="category-column">  <!-- Columna de categorías -->
@@ -124,11 +271,12 @@ $correo_usuario = isset($_SESSION['correo']) ? $_SESSION['correo'] : null;
     <!-- Filtros -->
     <div class="filters row mb-3">
 </div>
-<footer class="py-5 bg-dark">
-                <div class="container">
-                    <p class="m-0 text-center text-white">Copyright &copy; Todos los derechos reservados by MANFRA C.A</p>
-                </div>
-            </footer>
+<footer id="footer" style="background: #fff; border-top: 1px solid var(--border); padding: 36px 0 24px; margin-top: 40px;">
+    <div class="container text-center">
+        <h4 style="color: var(--primary); font-family: 'Outfit', sans-serif; font-weight: 800;">MultiShop</h4>
+        <p class="text-muted" style="font-size: 0.85rem; margin-top: 8px;">Copyright &copy; Todos los derechos reservados by MANFRA C.A</p>
+    </div>
+</footer>
             <script src="../public/bootstrap/js/bootstrap.min.js"></script>
         <script>
         function estaAutenticado() {
